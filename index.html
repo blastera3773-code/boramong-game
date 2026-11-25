@@ -236,6 +236,11 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
 .opt2.sel{border-color:var(--blue);background:var(--sky-100)}
 .thm{width:84px;height:56px;border-radius:12px;border:2px solid rgba(0,0,0,.08)}
 /* 상상 주문서 */
+.notice{background:var(--sky-100);border-radius:18px;padding:12px 16px;margin:8px 0 10px;font-size:16px;line-height:1.6}
+.notice p{margin:0 0 4px}.notice b{font-family:var(--heading);font-weight:400;color:var(--blue)}
+.store{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.store span{background:#fff;border-radius:999px;padding:3px 10px;font-size:14px}
+.store .sl2{background:none;padding:0 4px 0 0;font-family:var(--heading);font-size:15px}
 #imagine .nav .btn{white-space:nowrap;font-size:18px;padding:14px 18px}
 .order{background:#fffbea;border:3px solid #2b2b33;border-radius:20px;padding:14px 16px;margin:12px 0;box-shadow:4px 4px 0 #ffd166}
 .orderhead{font-family:var(--display);font-size:20px;margin-bottom:6px}
@@ -323,7 +328,6 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
     <h1>나만의 게임 만들기</h1>
     <p class="hand">상상한 게임을 써 보세요. 보라몽 게임 공장이 만들어 줘요!</p>
     <div class="row" style="justify-content:center;gap:12px">
-      <button class="btn big" data-go="step1" style="order:2;background:var(--surface);color:var(--ink);border:3px solid var(--line-strong)">👆 직접 고르기</button>
       <button class="btn big" id="toImagine" style="order:1">✍️ 상상해서 만들기</button>
     </div>
   </div>
@@ -332,6 +336,11 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
 <!-- 상상 주문서 -->
 <section class="screen" id="imagine">
   <h2>🏭 보라몽 게임 공장</h2>
+  <div class="notice">
+    <p>🤖 <b>AI도 배운 것, 가진 재료 안에서만 만들 수 있어요.</b></p>
+    <p>보라몽 게임 공장에는 선생님이 미리 만들어 둔 <b>게임 재료</b>가 있어요. 주문서를 읽고 이 재료로 게임을 조립해 줘요! 진짜 게임과 똑같이는 못 만들지만, 비슷한 느낌으로 만들어 볼게요.</p>
+    <div class="store"><span class="sl2">📦 재료 창고</span><span>🏃 보라몽 런</span><span>🧱 블록 오비</span><span>👾 괴물 탈출</span><span>💣 폭탄 해제</span><span>🔨 두더지 잡기</span></div>
+  </div>
   <p class="muted">어떤 게임을 상상했나요? 글로 쓰거나 아래 버튼을 눌러 주문서를 채워 주세요.</p>
   <div class="order">
     <div class="orderhead">📝 상상 주문서</div>
@@ -3126,11 +3135,25 @@ function findKW(text, list){
   for(const [val,words] of list){ for(const w of words){ if(t.includes(w) || tn.includes(w.replace(/\s+/g,""))) return {val, word:w}; } }
   return null;
 }
+const REAL_GAMES=[
+  ["쿠키런","run"],["지오메트리 대시","run"],["템플런","run"],["서브웨이 서퍼","run"],
+  ["마인크래프트","obby"],["마크","obby"],["로블록스","obby"],["슈퍼마리오","obby"],["마리오","obby"],["테트리스","obby"],
+  ["브롤스타즈","chase"],["브롤","chase"],["좀비고","chase"],["어몽어스","chase"],["팩맨","chase"],
+  ["포켓몬","",],["카트라이더","",],["배틀그라운드","",],["배그","",],["포트나이트","",],["피파","",],["메이플","",],["리그오브레전드","",],["오버워치","",],["동물의 숲","",],["모여봐요","",],["젤다","",]
+];
+const hasBatchim=w=>{ const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<11172 && c%28!==0; };
+function findReal(text){
+  const tn=text.replace(/\s+/g,"").toLowerCase();
+  for(const [nm,g] of REAL_GAMES){ if(tn.includes(nm.replace(/\s+/g,"").toLowerCase())) return {name:nm, game:g}; }
+  return null;
+}
 function readIdea(text){
   const r={};
   ["game","quiz","diff","char","acc","theme"].forEach(k=>{ const f=findKW(text,KW[k]); if(f) r[k]=f; });
   // '블록'만 있고 쌓기 문제가 아니면 오비로
   if(!r.game && /블록/.test(text) && !(r.quiz&&r.quiz.val==="block")) r.game={val:"obby",word:"블록"};
+  const real=findReal(text);
+  if(real){ r.real=real; if(real.game && !r.game) r.game={val:real.game, word:real.name}; }
   return r;
 }
 function renderIdeaChips(){
@@ -3178,13 +3201,24 @@ async function runFactory(){
   S.diff = found.diff? found.diff.val : 2; S.name="";
   paintPortrait(document.getElementById("factMong"),S.char,S.acc);
   // 찾은 낱말
-  const words=Object.values(found).map(f=>f.word);
+  const words=Object.entries(found).filter(([k])=>k!=="real").map(([,f])=>f.word);
   const fw=document.getElementById("foundWrap"), fwd=document.getElementById("foundWords");
   fwd.innerHTML=""; fw.hidden=!words.length;
   for(const w of words){ await sleep(250); if(run!==FACT_RUN) return; const sp=document.createElement("span"); sp.textContent=w; fwd.appendChild(sp); bell(NOTE(7),0,.15,.05); }
   await sleep(500); if(run!==FACT_RUN) return;
   logLine(`📝 상상 주문서 읽기 <span class="ok">✓</span>`); setBar(18); sndCoin();
   await sleep(500); if(run!==FACT_RUN) return;
+  if(found.real){
+    const nm=found.real.name, eun=hasBatchim(nm)?"은":"는";
+    if(found.real.game && found.game && found.game.val===found.real.game){
+      const g=GAMES.find(x=>x.id===found.real.game), ro=hasBatchim(g.t)?"으로":"로";
+      logLine(`💡 '${nm}'${eun} 진짜 게임이라 똑같이는 못 만들어요. 대신 비슷한 <b>${g.emo} ${g.t}</b>${ro} 만들어 볼게요!`);
+    } else if(!found.real.game){
+      logLine(`💡 '${nm}'${eun} 진짜 게임이라 공장에 재료가 없어요. 재료 창고에 있는 게임으로 만들어 볼게요!`);
+    }
+    bell(NOTE(9),0,.3,.07);
+    await sleep(1400); if(run!==FACT_RUN) return;
+  }
   // 문제
   let quiz = found.quiz? found.quiz.val : null;
   if(!quiz){ const c=await askChoice("게임 중간에 어떤 문제를 낼까?", QUIZZES.map(q=>[q.id,`${q.emo} ${q.t}`])); if(run!==FACT_RUN) return; quiz=c[0]; }
@@ -3973,7 +4007,7 @@ function showResult(r){
   renderQR();
 }
 document.getElementById("againBtn").addEventListener("click",startGame);
-document.getElementById("editBtn").addEventListener("click",()=>{renderQuiz(); show("step1");});
+document.getElementById("editBtn").addEventListener("click",()=>{ document.getElementById("toImagine").click(); });
 document.getElementById("quitBtn").addEventListener("click",e=>{ e.stopPropagation(); if(G&&!G.over){ G.hp=0; endGame(); } });
 
 // ===== 블록 오비 =====
@@ -4521,7 +4555,7 @@ function boot(){
   }
 }
 document.getElementById("introStart").addEventListener("click",startGame);
-document.getElementById("introMake").addEventListener("click",()=>{ S.shared=false; S.game=null;S.quiz=null;S.name="";S.char=0;S.acc=0;S.theme=0; renderQuiz(); show("step1"); });
+document.getElementById("introMake").addEventListener("click",()=>{ S.shared=false; S.game=null;S.quiz=null;S.name="";S.char=0;S.acc=0;S.theme=0; document.getElementById("toImagine").click(); });
 document.getElementById("homeBtn").addEventListener("click",()=>{ S.shared=false; });
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ paintPortrait(document.getElementById("heroMong"),0); });
 boot();
