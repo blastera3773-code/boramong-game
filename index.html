@@ -4658,7 +4658,7 @@ function fArrive(){
   if(tg.tree){ const t=tg.tree; t.shake=.4;
     fAsk("🌲 나무 문제!","✓ 정답! 장작을 얻었어요!",ok=>{
       if(ok){ const n=1+(COMBO>=3?1:0); F.mong.carry+=n; F.woodAll+=n; F.score+=50; t.stump=8; fPop(n>1?`🪵+${n} 콤보 보너스!`:"🪵+1",t.x,t.y-t.r-20,"#8a5a2b"); }
-      else { t.shake=.8; fPop("앗, 다시!",t.x,t.y-t.r-20,"#c2241a"); }
+      else { t.shake=.8; F.fire=Math.max(0,F.fire-5); fPop("🔥 −5",FIRE.x,FIRE.y-90,"#c2241a"); fPop("앗, 다시!",t.x,t.y-t.r-20,"#c2241a"); if(F.fire<=0) endForest(); }
     }); }
 }
 function spawnMonster(){
