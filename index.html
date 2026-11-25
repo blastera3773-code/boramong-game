@@ -220,7 +220,7 @@ body.themed .mgrid{background:var(--tfield)}
 body.dark-theme #bomb .bleft, body.dark-theme #mole .keys{color:#e8e6f5}
 body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-theme #mole .mcombo{color:#fff}
 /* 꾸미기 */
-.dstage{position:relative;border-radius:28px;border:3px solid var(--line);height:220px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden;margin:10px 0 6px}
+.dstage{position:sticky;top:0;z-index:20;box-shadow:0 6px 14px rgba(43,43,51,.12);border-radius:28px;border:3px solid var(--line);height:220px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden;margin:10px 0 6px}
 .dstage canvas{width:170px;height:170px;margin-bottom:-6px}
 .dstage canvas.hop{animation:stagehop .45s cubic-bezier(.3,1.6,.5,1)}
 @keyframes stagehop{0%{transform:translateY(0)}40%{transform:translateY(-30px) scale(1.05)}100%{transform:translateY(0)}}
@@ -235,6 +235,7 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
 .opt2 .oe{font-size:26px;line-height:1.1}
 .opt2.sel{border-color:var(--blue);background:var(--sky-100)}
 .thm{width:84px;height:56px;border-radius:12px;border:2px solid rgba(0,0,0,.08)}
+@media (max-width:640px){.dstage{height:180px}.dstage canvas{width:140px;height:140px}}
 /* 상상 주문서 */
 .notice{background:var(--sky-100);border-radius:18px;padding:12px 16px;margin:8px 0 10px;font-size:16px;line-height:1.6}
 .notice p{margin:0 0 4px}.notice b{font-family:var(--heading);font-weight:400;color:var(--blue)}
