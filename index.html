@@ -235,6 +235,37 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
 .opt2 .oe{font-size:26px;line-height:1.1}
 .opt2.sel{border-color:var(--blue);background:var(--sky-100)}
 .thm{width:84px;height:56px;border-radius:12px;border:2px solid rgba(0,0,0,.08)}
+/* 상상 주문서 */
+#imagine .nav .btn{white-space:nowrap;font-size:18px;padding:14px 18px}
+.order{background:#fffbea;border:3px solid #2b2b33;border-radius:20px;padding:14px 16px;margin:12px 0;box-shadow:4px 4px 0 #ffd166}
+.orderhead{font-family:var(--display);font-size:20px;margin-bottom:6px}
+.order textarea{width:100%;border:0;background:transparent;font:inherit;font-size:19px;line-height:1.6;resize:none;outline:none;background-image:repeating-linear-gradient(transparent,transparent 29px,#f0d98a 30px);min-height:92px}
+.idealen{text-align:right;font-size:13px;color:var(--muted)}
+.chipgroup{margin:10px 0}.cg{font-family:var(--heading);font-size:17px;margin-bottom:6px}
+.chipgroup .chips{justify-content:flex-start}
+.chip.add{background:#fff}.chip.add:active{transform:scale(.95)}
+.linkbtn{background:none;border:0;color:var(--blue);text-decoration:underline;font:inherit;cursor:pointer}
+/* 게임 공장 */
+.fhead{display:flex;align-items:center;gap:14px;margin:6px 0 12px}
+.fhead canvas{width:110px;height:110px;flex:none;animation:hop .6s ease-in-out infinite}
+.fttl{font-family:var(--display);font-size:24px;line-height:1.25}
+.fbar{height:14px;background:var(--lavender-100);border-radius:999px;margin-top:8px;overflow:hidden;border:2px solid var(--line)}
+.fbar div{height:100%;width:0;background:linear-gradient(90deg,#b69cff,#6ec3ff);transition:width .5s}
+.foundw{margin:6px 0 10px}
+#foundWords{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+#foundWords span{background:#fff6c7;border:2px solid #f0d98a;border-radius:999px;padding:2px 10px;font-family:var(--heading);font-size:15px;animation:bump .4s}
+.flog{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.flog li{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 14px;font-size:17px;animation:slidein .35s ease}
+.flog li b{font-family:var(--heading);font-weight:400;color:var(--blue)}
+.flog li .ok{color:var(--green);font-family:var(--heading)}
+@keyframes slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ask{background:var(--sky-100);border-radius:18px;padding:14px;margin:8px 0}
+.ask .q{font-family:var(--heading);font-size:19px;margin-bottom:8px}
+.fdone{margin-top:14px}
+.fsum{background:linear-gradient(135deg,#ece7ff,#dfecff);border:3px solid #2b2b33;border-radius:22px;padding:16px;text-align:center}
+.fsum .fs1{font-family:var(--display);font-size:26px}
+.fsum .fs2{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.fsum .fs2 span{background:#fff;border-radius:999px;padding:3px 12px;font-size:15px}
 /* 소리·점수 */
 .mutebtn{position:fixed;bottom:10px;left:10px;z-index:60;width:42px;height:42px;opacity:.9;border-radius:50%;border:3px solid var(--line);background:var(--surface);font-size:22px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .score.bump{animation:bump .35s ease}
@@ -290,8 +321,48 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
   <div class="hero">
     <canvas id="heroMong" width="400" height="400" aria-hidden="true"></canvas>
     <h1>나만의 게임 만들기</h1>
-    <p class="hand">문제 고르고, 게임 고르고, 꾸미면 끝! 3단계면 내 게임 완성!</p>
-    <button class="btn big" data-go="step1">🎮 만들기 시작</button>
+    <p class="hand">상상한 게임을 써 보세요. 보라몽 게임 공장이 만들어 줘요!</p>
+    <div class="row" style="justify-content:center;gap:12px">
+      <button class="btn big" data-go="step1" style="order:2;background:var(--surface);color:var(--ink);border:3px solid var(--line-strong)">👆 직접 고르기</button>
+      <button class="btn big" id="toImagine" style="order:1">✍️ 상상해서 만들기</button>
+    </div>
+  </div>
+</section>
+
+<!-- 상상 주문서 -->
+<section class="screen" id="imagine">
+  <h2>🏭 보라몽 게임 공장</h2>
+  <p class="muted">어떤 게임을 상상했나요? 글로 쓰거나 아래 버튼을 눌러 주문서를 채워 주세요.</p>
+  <div class="order">
+    <div class="orderhead">📝 상상 주문서</div>
+    <textarea id="ideaIn" rows="3" maxlength="120" placeholder="예) 괴물을 피해 도망가는 밤하늘 게임! 구구단 나오게, 왕관 쓴 핑크몽으로"></textarea>
+    <div class="idealen"><span id="ideaLen">0</span>/120</div>
+  </div>
+  <div class="chipgroup"><div class="cg">🎮 어떤 게임?</div><div class="chips" id="chipGame"></div></div>
+  <div class="chipgroup"><div class="cg">🧩 어떤 문제?</div><div class="chips" id="chipQuiz"></div></div>
+  <div class="chipgroup"><div class="cg">🎨 어떻게 꾸밀까?</div><div class="chips" id="chipDeco"></div></div>
+  <div class="nav"><button class="btn sub" data-go="home">← 처음으로</button><button class="btn big" id="buildBtn" disabled>✨ 만들어 줘!</button></div>
+</section>
+
+<!-- 게임 공장 (만드는 중) -->
+<section class="screen" id="factory">
+  <div class="fhead">
+    <canvas id="factMong" width="240" height="240" aria-hidden="true"></canvas>
+    <div>
+      <div class="fttl" id="factTitle">보라몽이 게임을 만들고 있어요…</div>
+      <div class="fbar"><div id="factBar"></div></div>
+    </div>
+  </div>
+  <div class="foundw" id="foundWrap" hidden><span class="muted">주문서에서 찾은 낱말</span><div id="foundWords"></div></div>
+  <div class="ask" id="askBox" hidden></div>
+  <ol class="flog" id="factLog"></ol>
+  <div class="fdone" id="factDone" hidden>
+    <div class="fsum" id="factSum"></div>
+    <div class="row" style="justify-content:center;gap:10px;margin-top:14px">
+      <button class="btn sub" id="factEdit">🎨 더 꾸미기</button>
+      <button class="btn big" id="factPlay">▶ 바로 시작!</button>
+    </div>
+    <p class="center" style="margin-top:8px"><button class="linkbtn" id="factRetry">↺ 주문서 다시 쓰기</button></p>
   </div>
 </section>
 
@@ -3035,6 +3106,121 @@ document.getElementById("makeBtn").addEventListener("click",()=>{
   S.name = document.getElementById("gname").value.trim().slice(0,12);
   startGame();
 });
+
+// ===== 상상 주문서 · 보라몽 게임 공장 =====
+const IDEA_CHIPS = {
+  chipGame:[["👾 괴물에게 쫓기는","괴물에게 쫓기는 "],["🧱 용암 위 점프","용암 위를 점프하는 "],["💣 폭탄 해제","폭탄을 해제하는 "],["🔨 두더지 잡기","두더지 잡는 "],["🏃 신나게 달리는","신나게 달리는 "]],
+  chipQuiz:[["✖️ 구구단","구구단 문제가 나오는 "],["🔤 영어 단어","영어 단어 맞히는 "],["🤪 넌센스","넌센스 퀴즈 나오는 "],["🍡 간식 초성","간식 초성 퀴즈 "],["🧊 쌓기나무","쌓기나무 문제 "],["🎈 문제 없이","문제 없이 신나는 "]],
+  chipDeco:[["🌙 밤하늘","밤하늘 "],["🐠 바닷속","바닷속 "],["🌇 노을","노을 지는 "],["👑 왕관","왕관 쓴 "],["🕶️ 선글라스","선글라스 낀 "],["🧙 마법사","마법사 "],["💗 핑크몽","핑크몽 "],["💚 민트몽","민트몽 "],["🙂 쉽게","쉬운 "],["🔥 어렵게","어려운 "]]
+};
+const KW = {
+  game:[["chase",["괴물","도망","쫓","탈출","좀비","유령","몬스터"]],["obby",["용암","오비","블록 위","블록위","계단","로블록스","발판","올라가"]],["bomb",["폭탄","전선","해제","시한"]],["mole",["두더지","망치","때리","뿅"]],["run",["달리","달려","뛰","런","쿠키","질주","러닝","점프"]]],
+  quiz:[["none",["문제 없","문제없","그냥 놀","놀기만"]],["math",["구구단","곱셈","덧셈","뺄셈","나눗셈","계산","더하기","빼기","수학","숫자","곱하기"]],["eng",["영어","영단어","단어","english"]],["non",["넌센스","난센스","수수께끼","웃긴 퀴즈"]],["snack",["간식","초성","과자","떡볶이"]],["block",["쌓기나무","쌓기","블록 개수","블록 세"]]],
+  diff:[[1,["쉬운","쉽게","쉬움","천천히","아기"]],[3,["어려운","어렵게","어려움","고수","빠르게","최강"]],[2,["보통"]]],
+  char:[[3,["핑크","분홍"]],[1,["민트","초록","연두"]],[2,["피치","주황","살구"]],[4,["하늘몽","하늘색","파란","파랑"]],[0,["보라"]]],
+  acc:[[1,["왕관","공주","왕자","여왕","임금"]],[2,["리본"]],[3,["선글라스","안경","멋쟁이"]],[4,["헤드폰","음악","노래"]],[5,["꽃"]],[6,["마법","마녀","마술","모자"]]],
+  theme:[[2,["밤하늘","밤","별빛","달님","우주","은하"]],[3,["바닷속","바다","물고기","물속","상어","해저","수영"]],[1,["노을","저녁","석양","해질"]],[0,["낮","햇살","아침","맑은"]]]
+};
+function findKW(text, list){
+  const t=text.toLowerCase(), tn=t.replace(/\s+/g,"");
+  for(const [val,words] of list){ for(const w of words){ if(t.includes(w) || tn.includes(w.replace(/\s+/g,""))) return {val, word:w}; } }
+  return null;
+}
+function readIdea(text){
+  const r={};
+  ["game","quiz","diff","char","acc","theme"].forEach(k=>{ const f=findKW(text,KW[k]); if(f) r[k]=f; });
+  // '블록'만 있고 쌓기 문제가 아니면 오비로
+  if(!r.game && /블록/.test(text) && !(r.quiz&&r.quiz.val==="block")) r.game={val:"obby",word:"블록"};
+  return r;
+}
+function renderIdeaChips(){
+  Object.entries(IDEA_CHIPS).forEach(([id,list])=>{
+    const box=document.getElementById(id);
+    box.innerHTML=list.map((c,i)=>`<button type="button" class="chip add" data-i="${i}">${c[0]}</button>`).join("");
+    box.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+      const ta=document.getElementById("ideaIn"); const add=list[+b.dataset.i][1];
+      const sep=(ta.value && !/\s$/.test(ta.value))?" ":""; if((ta.value+sep+add).length<=120){ ta.value+=sep+add; } ideaChanged(); boing();
+      b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump");
+    }));
+  });
+}
+function ideaChanged(){
+  const v=document.getElementById("ideaIn").value;
+  document.getElementById("ideaLen").textContent=v.length;
+  document.getElementById("buildBtn").disabled = v.trim().length<2;
+}
+document.getElementById("ideaIn").addEventListener("input",ideaChanged);
+document.getElementById("toImagine").addEventListener("click",()=>{
+  S.shared=false; renderIdeaChips(); ideaChanged(); show("imagine");
+  setTimeout(()=>{ try{ document.getElementById("ideaIn").focus(); }catch(e){} },100);
+});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let FACT_RUN=0;
+function logLine(html){ const li=document.createElement("li"); li.innerHTML=html; document.getElementById("factLog").appendChild(li); return li; }
+function setBar(p){ document.getElementById("factBar").style.width=p+"%"; }
+function askChoice(question, options){ // options: [[val,label]]
+  return new Promise(res=>{
+    const box=document.getElementById("askBox"); box.hidden=false;
+    box.innerHTML=`<div class="q">🤔 ${question}</div><div class="chips" style="justify-content:flex-start">${options.map((o,i)=>`<button type="button" class="chip add" data-i="${i}">${o[1]}</button>`).join("")}</div>`;
+    sndRight(); COMBO=0; hideCombo();
+    box.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{ box.hidden=true; boing(); res(options[+b.dataset.i]); }));
+  });
+}
+async function runFactory(){
+  const run=++FACT_RUN;
+  const text=document.getElementById("ideaIn").value.trim();
+  const found=readIdea(text);
+  show("factory");
+  ["factLog"].forEach(id=>document.getElementById(id).innerHTML="");
+  document.getElementById("factDone").hidden=true; document.getElementById("askBox").hidden=true;
+  document.getElementById("factTitle").textContent="보라몽이 주문서를 읽고 있어요…"; setBar(5);
+  S.char = found.char? found.char.val : 0; S.acc = found.acc? found.acc.val : 0; S.theme = found.theme? found.theme.val : 0;
+  S.diff = found.diff? found.diff.val : 2; S.name="";
+  paintPortrait(document.getElementById("factMong"),S.char,S.acc);
+  // 찾은 낱말
+  const words=Object.values(found).map(f=>f.word);
+  const fw=document.getElementById("foundWrap"), fwd=document.getElementById("foundWords");
+  fwd.innerHTML=""; fw.hidden=!words.length;
+  for(const w of words){ await sleep(250); if(run!==FACT_RUN) return; const sp=document.createElement("span"); sp.textContent=w; fwd.appendChild(sp); bell(NOTE(7),0,.15,.05); }
+  await sleep(500); if(run!==FACT_RUN) return;
+  logLine(`📝 상상 주문서 읽기 <span class="ok">✓</span>`); setBar(18); sndCoin();
+  await sleep(500); if(run!==FACT_RUN) return;
+  // 문제
+  let quiz = found.quiz? found.quiz.val : null;
+  if(!quiz){ const c=await askChoice("게임 중간에 어떤 문제를 낼까?", QUIZZES.map(q=>[q.id,`${q.emo} ${q.t}`])); if(run!==FACT_RUN) return; quiz=c[0]; }
+  S.quiz=quiz;
+  // 게임
+  let game = found.game? found.game.val : null;
+  if(!game){ const rec=REC[S.quiz]||GAMES.map(g=>g.id); const c=await askChoice("어떤 게임으로 만들까?", rec.map(id=>{const g=GAMES.find(x=>x.id===id); return [id,`${g.emo} ${g.t}`];})); if(run!==FACT_RUN) return; game=c[0]; }
+  S.game=game;
+  const G1=GAMES.find(g=>g.id===S.game), Q1=QUIZZES.find(q=>q.id===S.quiz);
+  document.getElementById("factTitle").textContent="보라몽이 게임을 만들고 있어요…";
+  const steps=[
+    [`🎮 게임 규칙 정하는 중…`, `<b>${G1.emo} ${G1.t}</b>`],
+    [`🧩 문제 만드는 중…`, `<b>${Q1.emo} ${Q1.t}</b> · ${["","🙂 쉬움","😎 보통","🔥 어려움"][S.diff]}`],
+    [`🎨 캐릭터 꾸미는 중…`, `<b>${CHARS[S.char].n}</b>${S.acc?` + ${ACCS[S.acc].e} ${ACCS[S.acc].n}`:""}`],
+    [`${TH().e} 배경 그리는 중…`, `<b>${TH().n}</b>`],
+    [`🏷️ 게임 이름 짓는 중…`, null]
+  ];
+  let p=25;
+  for(const [a,b] of steps){
+    const li=logLine(a); paintPortrait(document.getElementById("factMong"),S.char,S.acc);
+    await sleep(750); if(run!==FACT_RUN) return;
+    if(b===null){ S.name=rollName(); li.innerHTML=`🏷️ 게임 이름 → <b>${S.name}</b> <span class="ok">✓</span>`; }
+    else li.innerHTML=`${a.replace("…","")} → ${b} <span class="ok">✓</span>`;
+    p+=15; setBar(p); sndRight();
+    await sleep(250); if(run!==FACT_RUN) return;
+  }
+  setBar(100); COMBO=0; hideCombo();
+  document.getElementById("factTitle").textContent="완성! 내가 상상한 게임이에요 🎉";
+  document.getElementById("factSum").innerHTML=`<div class="fs1">${S.name}</div><div class="fs2"><span>${G1.emo} ${G1.t}</span><span>${Q1.emo} ${Q1.t}</span><span>${CHARS[S.char].n}</span>${S.acc?`<span>${ACCS[S.acc].e} ${ACCS[S.acc].n}</span>`:""}<span>${TH().e} ${TH().n}</span></div>`;
+  document.getElementById("factDone").hidden=false;
+  sndFanfare(3); confettiBurst(50);
+}
+document.getElementById("buildBtn").addEventListener("click",runFactory);
+document.getElementById("factPlay").addEventListener("click",()=>startGame());
+document.getElementById("factEdit").addEventListener("click",()=>{ renderQuiz(); renderGames(); renderChars(); show("step3"); });
+document.getElementById("factRetry").addEventListener("click",()=>{ FACT_RUN++; show("imagine"); });
 
 // ===== 링크(QR) 만들기 =====
 function toHex(str){ return Array.from(new TextEncoder().encode(str)).map(b=>b.toString(16).padStart(2,"0")).join(""); }
