@@ -284,6 +284,10 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:55;overflow:hidden}
 .confetti i{position:absolute;top:-20px;width:10px;height:16px;border-radius:3px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.sharerow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0 6px}
+.sharerow .btn{white-space:nowrap}
+.qrsub{border-top:2px dashed var(--line);margin-top:12px;padding-top:10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+@media (max-width:640px){.qrsub .box svg{width:150px!important;height:150px!important}}
 /* result */
 .reshead{display:flex;align-items:center;gap:16px;justify-content:center;margin:6px 0 14px;text-align:left}
 .reshead canvas{width:120px;height:120px;flex:none;animation:hop 1s ease-in-out infinite}
@@ -537,8 +541,16 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
     </div>
     <div class="panel qr">
       <div style="font-family:var(--heading);font-size:22px">📱 내 게임 가져가기</div>
-      <div class="box" id="qrBox"></div>
-      <div class="hand center">휴대폰 카메라로 찍으면<br>내가 만든 게임이 열려요!</div>
+      <div class="sharerow">
+        <button type="button" class="btn" id="shareBtn">📤 공유하기</button>
+        <button type="button" class="btn sub" id="copyBtn">🔗 링크 복사</button>
+      </div>
+      <div class="muted center" id="shareMsg" aria-live="polite">카카오톡 '나에게 보내기'나 메모에 저장해 두면<br>언제든 내 게임을 다시 할 수 있어요.</div>
+      <div class="muted center">⭐ 지금 화면을 즐겨찾기해도 내 게임이 저장돼요.</div>
+      <div class="qrsub">
+        <div class="muted center">부스 노트북에서 만들었다면 휴대폰 카메라로 찍어 가세요</div>
+        <div class="box" id="qrBox"></div>
+      </div>
       <div class="muted center" id="qrNote"></div>
     </div>
   </div>
@@ -3175,7 +3187,8 @@ function ideaChanged(){
 }
 document.getElementById("ideaIn").addEventListener("input",ideaChanged);
 document.getElementById("toImagine").addEventListener("click",()=>{
-  S.shared=false; renderIdeaChips(); ideaChanged(); show("imagine");
+  S.shared=false; try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+  renderIdeaChips(); ideaChanged(); show("imagine");
   setTimeout(()=>{ try{ document.getElementById("ideaIn").focus(); }catch(e){} },100);
 });
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -3278,7 +3291,28 @@ function renderQR(){
     box.innerHTML = qr.createSvgTag({cellSize:4, margin:2, scalable:true});
   }catch(e){ box.textContent = "QR을 만들지 못했어요."; }
   note.textContent = "";
+  try{ if(!S.shared) history.replaceState(null,"","#"+makeHash()); }catch(e){}
 }
+function myGameUrl(){ return (ARTIFACT_URL.indexOf("__")===0 ? location.href.split("#")[0] : ARTIFACT_URL) + "#" + makeHash(); }
+function shareText(){ return `🎮 내가 만든 게임 '${gameTitle()}' 해 볼래? (보라몽 게임 공장)`; }
+function flashShare(msg){ const m=document.getElementById("shareMsg"); m.textContent=msg; }
+async function copyLink(){
+  const url=myGameUrl();
+  try{ await navigator.clipboard.writeText(url); flashShare("✅ 링크를 복사했어요! 카카오톡이나 메모에 붙여 넣어 주세요."); return true; }
+  catch(e){
+    try{ const ta=document.createElement("textarea"); ta.value=url; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); const ok=document.execCommand("copy"); ta.remove(); if(ok){ flashShare("✅ 링크를 복사했어요! 카카오톡이나 메모에 붙여 넣어 주세요."); return true; } }catch(_){}
+    flashShare("복사가 안 됐어요. 주소창의 주소를 길게 눌러 복사해 주세요.");
+    return false;
+  }
+}
+document.getElementById("copyBtn").addEventListener("click",()=>{ copyLink(); sndCoin(); });
+document.getElementById("shareBtn").addEventListener("click",async()=>{
+  const url=myGameUrl();
+  if(navigator.share){
+    try{ await navigator.share({title:"보라몽 게임 공장", text:shareText(), url}); flashShare("📤 공유했어요!"); }
+    catch(e){ if(e && e.name!=="AbortError") copyLink(); }
+  } else { await copyLink(); }
+});
 
 // ===== 문제 만들기 =====
 const R = (a,b)=>a+Math.floor(Math.random()*(b-a+1));
