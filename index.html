@@ -272,6 +272,15 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
 .fsum .fs1{font-family:var(--display);font-size:26px}
 .fsum .fs2{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
 .fsum .fs2 span{background:#fff;border-radius:999px;padding:3px 12px;font-size:15px}
+/* 보라몽 숲 */
+.fphase{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;font-family:var(--heading);font-size:17px;margin-bottom:6px}
+.fphase span{background:var(--surface);border:2px solid var(--line);border-radius:999px;padding:2px 12px}
+.fstage{position:relative;border-radius:20px;overflow:hidden;border:3px solid var(--line);touch-action:manipulation;max-width:560px;margin:0 auto}
+.fstage canvas{display:block;width:100%;height:auto}
+.hpbar.fire{background:linear-gradient(90deg,#ff9f43,#ff5e3a)}
+.fbanner{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%) scale(0);background:#fff;border:4px solid #2b2b33;border-radius:22px;padding:10px 22px;font-family:var(--display);font-size:30px;text-align:center;white-space:nowrap;pointer-events:none;opacity:0}
+.fbanner.on{animation:fban 2.2s ease forwards}
+@keyframes fban{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
 /* 소리·점수 */
 .mutebtn{position:fixed;bottom:10px;left:10px;z-index:60;width:42px;height:42px;opacity:.9;border-radius:50%;border:3px solid var(--line);background:var(--surface);font-size:22px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .score.bump{animation:bump .35s ease}
@@ -344,7 +353,7 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
   <div class="notice">
     <p>🤖 <b>AI도 배운 것, 가진 재료 안에서만 만들 수 있어요.</b></p>
     <p>보라몽 게임 공장에는 선생님이 미리 만들어 둔 <b>게임 재료</b>가 있어요. 주문서를 읽고 이 재료로 게임을 조립해 줘요! 진짜 게임과 똑같이는 못 만들지만, 비슷한 느낌으로 만들어 볼게요.</p>
-    <div class="store"><span class="sl2">📦 재료 창고</span><span>🏃 보라몽 런</span><span>🧱 블록 오비</span><span>👾 괴물 탈출</span><span>💣 폭탄 해제</span><span>🔨 두더지 잡기</span></div>
+    <div class="store"><span class="sl2">📦 재료 창고</span><span>🏃 보라몽 런</span><span>🧱 블록 오비</span><span>👾 괴물 탈출</span><span>💣 폭탄 해제</span><span>🔨 두더지 잡기</span><span>🌲 보라몽 숲</span></div>
   </div>
   <p class="muted">어떤 게임을 상상했나요? 글로 쓰거나 아래 버튼을 눌러 주문서를 채워 주세요.</p>
   <div class="order">
@@ -461,7 +470,7 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
   <p class="keys muted">터치 = 점프 · 한 번 더 = 더블점프</p>
   <div class="qmodal" id="qModal" hidden>
     <div class="qcard">
-      <div class="qtop"><span class="qlabel">❓ 문제 문!</span><span class="qsec" id="qSec"></span></div>
+      <div class="qtop"><span class="qlabel" id="qLabel">❓ 문제 문!</span><span class="qsec" id="qSec"></span></div>
       <div class="qtimer"><div id="qTimer"></div></div>
       <div id="qQ"></div>
       <div class="qopts" id="qOpts"></div>
@@ -509,6 +518,22 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
   </div>
   <div class="mgrid" id="mGrid"></div>
   <p class="keys muted">정답이 적힌 두더지를 톡! 💣 폭탄 두더지는 조심!</p>
+</section>
+
+<!-- 보라몽 숲 -->
+<section class="screen" id="forest">
+  <div class="hud">
+    <span class="fstat" title="모닥불">🔥</span>
+    <div class="hpwrap" aria-label="모닥불"><div class="hpbar fire" id="fFire"></div><div class="hplabel" id="fFireL">모닥불 100</div></div>
+    <div class="score" id="fScore">0점</div>
+    <button class="xbtn" id="fQuit" aria-label="그만하기">✕</button>
+  </div>
+  <div class="fphase"><span id="fPhase">☀️ 1일째 낮</span><span id="fTime">40초</span><span>🪵 <b id="fWood">0</b></span><span>🌙 <b id="fNights">0</b>밤</span></div>
+  <div class="fstage" id="fStage">
+    <canvas id="fcv" width="900" height="1000"></canvas>
+    <div class="fbanner" id="fBanner"></div>
+  </div>
+  <p class="keys muted" id="fHint">🌲 나무를 톡! 문제를 맞히면 장작 🪵 · 모닥불 🔥을 톡! 장작 넣기</p>
 </section>
 
 <!-- 결과 화면 -->
@@ -2867,6 +2892,7 @@ const GAMES = [
   {id:"chase",emo:"👾", t:"괴물 탈출", d:"괴물이 쫓아와요! 정답을 맞히면 부스트로 도망!", ok:true, c:"c3"},
   {id:"bomb", emo:"💣", t:"폭탄 해제", d:"째깍째깍… 문제를 맞혀 전선을 모두 자르면 해제!", ok:true, c:"c4"},
   {id:"mole", emo:"🔨", t:"두더지 잡기", d:"정답 두더지만 쾅! 폭탄 두더지는 조심!", ok:true, c:"c5"},
+  {id:"forest",emo:"🌲", t:"보라몽 숲", d:"나무 문제로 장작을 모아 모닥불을 지켜요! 밤엔 괴물이 와요.", ok:true, c:"c2"},
 ];
 const QUIZZES = [
   {id:"math",  emo:"➕", t:"계산 챌린지", d:"덧셈·뺄셈·곱셈·나눗셈", c:"c4"},
@@ -2925,6 +2951,7 @@ function show(id){
   if(id!=="play") stopGame();
   if(id!=="bomb" && typeof stopBomb==="function") stopBomb();
   if(id!=="mole" && typeof stopMole==="function") stopMole();
+  if(id!=="forest" && typeof stopForest==="function" && F) stopForest();
 }
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.go==="home"){S.shared=false;} show(b.dataset.go); }));
 
@@ -3041,11 +3068,11 @@ function cardHTML(o, sel, disabled){
     ${disabled?'<span class="soon">곧 나와요</span>':""}</button>`;
 }
 const REC = {
-  math:["mole","bomb","chase"],
-  eng:["mole","run","obby"],
-  non:["run","chase"],
-  snack:["bomb","run"],
-  block:["bomb","obby"],
+  math:["mole","bomb","chase","forest"],
+  eng:["mole","run","obby","forest"],
+  non:["run","chase","forest"],
+  snack:["bomb","run","forest"],
+  block:["bomb","obby","forest"],
   none:["run","obby","chase","bomb","mole"]
 };
 function renderQuiz(){
@@ -3108,7 +3135,7 @@ function renderChars(){
   renderStage(false);
 }
 const ADJ=["번개","무적","반짝","슈퍼","꿀잼","용감한","초특급","행운의","무지개","우주최강","전설의","말랑"];
-const NOUN={run:["달리기","질주","런"],obby:["점프왕","블록왕","오비"],chase:["탈출","도망자","대탈출"],bomb:["폭탄 해제","해제반","폭탄왕"],mole:["두더지","망치왕","두더지왕"]};
+const NOUN={forest:["숲","모닥불","캠프","숲속의 밤"],run:["달리기","질주","런"],obby:["점프왕","블록왕","오비"],chase:["탈출","도망자","대탈출"],bomb:["폭탄 해제","해제반","폭탄왕"],mole:["두더지","망치왕","두더지왕"]};
 function rollName(){
   const ch=CHARS[S.char].n, nouns=NOUN[S.game]||["게임"];
   for(let k=0;k<30;k++){
@@ -3131,12 +3158,12 @@ document.getElementById("makeBtn").addEventListener("click",()=>{
 
 // ===== 상상 주문서 · 보라몽 게임 공장 =====
 const IDEA_CHIPS = {
-  chipGame:[["👾 괴물에게 쫓기는","괴물에게 쫓기는 "],["🧱 용암 위 점프","용암 위를 점프하는 "],["💣 폭탄 해제","폭탄을 해제하는 "],["🔨 두더지 잡기","두더지 잡는 "],["🏃 신나게 달리는","신나게 달리는 "]],
+  chipGame:[["🌲 숲속 모닥불","숲속에서 모닥불 지키는 "],["👾 괴물에게 쫓기는","괴물에게 쫓기는 "],["🧱 용암 위 점프","용암 위를 점프하는 "],["💣 폭탄 해제","폭탄을 해제하는 "],["🔨 두더지 잡기","두더지 잡는 "],["🏃 신나게 달리는","신나게 달리는 "]],
   chipQuiz:[["✖️ 구구단","구구단 문제가 나오는 "],["🔤 영어 단어","영어 단어 맞히는 "],["🤪 넌센스","넌센스 퀴즈 나오는 "],["🍡 간식 초성","간식 초성 퀴즈 "],["🧊 쌓기나무","쌓기나무 문제 "],["🎈 문제 없이","문제 없이 신나는 "]],
   chipDeco:[["🌙 밤하늘","밤하늘 "],["🐠 바닷속","바닷속 "],["🌇 노을","노을 지는 "],["👑 왕관","왕관 쓴 "],["🕶️ 선글라스","선글라스 낀 "],["🧙 마법사","마법사 "],["💗 핑크몽","핑크몽 "],["💚 민트몽","민트몽 "],["🙂 쉽게","쉬운 "],["🔥 어렵게","어려운 "]]
 };
 const KW = {
-  game:[["chase",["괴물","도망","쫓","탈출","좀비","유령","몬스터"]],["obby",["용암","오비","블록 위","블록위","계단","로블록스","발판","올라가"]],["bomb",["폭탄","전선","해제","시한"]],["mole",["두더지","망치","때리","뿅"]],["run",["달리","달려","뛰","런","쿠키","질주","러닝","점프"]]],
+  game:[["forest",["숲","모닥불","장작","캠핑","캠프","나무"]],["chase",["괴물","도망","쫓","탈출","좀비","유령","몬스터"]],["obby",["용암","오비","블록 위","블록위","계단","로블록스","발판","올라가"]],["bomb",["폭탄","전선","해제","시한"]],["mole",["두더지","망치","때리","뿅"]],["run",["달리","달려","뛰","런","쿠키","질주","러닝","점프"]]],
   quiz:[["none",["문제 없","문제없","그냥 놀","놀기만"]],["math",["구구단","곱셈","덧셈","뺄셈","나눗셈","계산","더하기","빼기","수학","숫자","곱하기"]],["eng",["영어","영단어","단어","english"]],["non",["넌센스","난센스","수수께끼","웃긴 퀴즈"]],["snack",["간식","초성","과자","떡볶이"]],["block",["쌓기나무","쌓기","블록 개수","블록 세"]]],
   diff:[[1,["쉬운","쉽게","쉬움","천천히","아기"]],[3,["어려운","어렵게","어려움","고수","빠르게","최강"]],[2,["보통"]]],
   char:[[3,["핑크","분홍"]],[1,["민트","초록","연두"]],[2,["피치","주황","살구"]],[4,["하늘몽","하늘색","파란","파랑"]],[0,["보라"]]],
@@ -3149,6 +3176,7 @@ function findKW(text, list){
   return null;
 }
 const REAL_GAMES=[
+  ["99밤","forest"],["99nights","forest"],["99나이츠","forest"],["숲속의 99밤","forest"],
   ["쿠키런","run"],["지오메트리 대시","run"],["템플런","run"],["서브웨이 서퍼","run"],
   ["마인크래프트","obby"],["마크","obby"],["로블록스","obby"],["슈퍼마리오","obby"],["마리오","obby"],["테트리스","obby"],
   ["브롤스타즈","chase"],["브롤","chase"],["좀비고","chase"],["어몽어스","chase"],["팩맨","chase"],
@@ -3162,7 +3190,8 @@ function findReal(text){
 }
 function readIdea(text){
   const r={};
-  ["game","quiz","diff","char","acc","theme"].forEach(k=>{ const f=findKW(text,KW[k]); if(f) r[k]=f; });
+  ["quiz","diff","char","acc","theme"].forEach(k=>{ const f=findKW(text,KW[k]); if(f) r[k]=f; });
+  const g=findKW(text.replace(/쌓기\s*나무/g,""),KW.game); if(g) r.game=g;
   // '블록'만 있고 쌓기 문제가 아니면 오비로
   if(!r.game && /블록/.test(text) && !(r.quiz&&r.quiz.val==="block")) r.game={val:"obby",word:"블록"};
   const real=findReal(text);
@@ -3718,6 +3747,7 @@ function newRun(){
 function startGame(){
   if(S.game==="bomb"){ stopGame(); return startBomb(); }
   if(S.game==="mole"){ stopGame(); return startMole(); }
+  if(S.game==="forest"){ stopGame(); return startForest(); }
   initAudio();
   nonBag=[]; snackBag=[]; engBag=[]; COMBO=0; hideCombo();
   closeQuiz();
@@ -3746,8 +3776,9 @@ function jump(){
 // --- 문제 카드 ---
 let qIv=0;
 function closeQuiz(){ const m=document.getElementById("qModal"); if(m) m.hidden=true; clearInterval(qIv); }
-function openQuiz(q){
-  G.paused=true; G.qAll++;
+function openQuiz(q, onResolve){
+  if(!onResolve){ G.paused=true; G.qAll++; }
+  document.getElementById("qLabel").textContent = q.label || "❓ 문제 문!";
   const m=document.getElementById("qModal");
   document.getElementById("qQ").innerHTML=q.html;
   document.getElementById("qFb").textContent=""; document.getElementById("qFb").className="fb";
@@ -3772,20 +3803,20 @@ function openQuiz(q){
     if(left<=0) answer(-1);
   };
   const answer=(i)=>{
-    if(done||!G) return; done=true; clearInterval(qIv);
+    if(done||(!onResolve&&!G)) return; done=true; clearInterval(qIv);
     const ok = q.input ? i===1 : (i>=0 && q.opts[i]===q.right);
     const fb=document.getElementById("qFb");
     if(q.input){
       const inp=document.getElementById("qIn"); inp.disabled=true; inp.blur(); box.querySelector("button").disabled=true;
       if(!ok){ inp.value=q.right; } inp.classList.add(ok?"good":"bad");
-      if(ok){ fb.className="fb g"; fb.textContent="✓ 정답! 문이 열려요!"; sndRight(); }
+      if(ok){ fb.className="fb g"; fb.textContent=q.okMsg||"✓ 정답! 문이 열려요!"; sndRight(); }
       else { fb.className="fb r"; fb.textContent=`⏰ 시간 초과! 정답은 "${q.right}"`; sndWrong(); }
     } else {
     box.querySelectorAll("button").forEach((b,j)=>{ b.disabled=true; if(q.opts[j]===q.right) b.classList.add("good"); else if(j===i) b.classList.add("bad"); });
-    if(ok){ fb.className="fb g"; fb.textContent="✓ 정답! 문이 열려요!"; sndRight(); }
+    if(ok){ fb.className="fb g"; fb.textContent=q.okMsg||"✓ 정답! 문이 열려요!"; sndRight(); }
     else { fb.className="fb r"; fb.textContent = i<0 ? "⏰ 시간 초과! 정답은 초록색" : "✕ 아쉬워요! 정답은 초록색"; sndWrong(); }
     }
-    setTimeout(()=>{ if(!G) return; closeQuiz(); resolveGate(ok); }, ok?800:1500);
+    setTimeout(()=>{ if(onResolve){ closeQuiz(); onResolve(ok); return; } if(!G) return; closeQuiz(); resolveGate(ok); }, ok?800:1500);
   };
   if(q.input){
     document.getElementById("qForm").addEventListener("submit",e=>{
@@ -4032,10 +4063,10 @@ function showResult(r){
   document.getElementById("resQuiz").textContent = (S.quiz==="none" && S.game!=="bomb") ? "문제 없음" : `${r.ok} / ${Math.max(0,r.all)}`;
   const rows = r.rows || [["달린 거리", r.dist+"m"],["모은 별", r.stars+"개"]];
   document.getElementById("resDistL").textContent = rows[0][0]; document.getElementById("resDist").textContent = rows[0][1];
-  document.getElementById("resDistI").textContent = /높이/.test(rows[0][0])?"🧱":/폭탄/.test(rows[0][0])?"💣":/두더지/.test(rows[0][0])?"🔨":"🏃";
+  document.getElementById("resDistI").textContent = /밤/.test(rows[0][0])?"🌙":/높이/.test(rows[0][0])?"🧱":/폭탄/.test(rows[0][0])?"💣":/두더지/.test(rows[0][0])?"🔨":"🏃";
   document.getElementById("resStarL").textContent = rows[1][0]; document.getElementById("resStar").textContent = rows[1][1];
   document.getElementById("resBest").textContent = best+"점";
-  document.getElementById("resMsg").textContent = (isChase()?"괴물에게 잡혔어요! ":S.game==="bomb"?"폭탄이 터졌어요! ":S.game==="obby"?"용암에 빠졌어요! ":S.game==="mole"?"게임 끝! ":"") + (st===3? "대단해요! 친구한테 이 점수를 깨 보라고 해 봐요!" : st===2? "잘했어요! 조금만 더 하면 별 3개!" : "괜찮아요! 다시 하면 더 잘할 수 있어요!");
+  document.getElementById("resMsg").textContent = (isChase()?"괴물에게 잡혔어요! ":S.game==="bomb"?"폭탄이 터졌어요! ":S.game==="obby"?"용암에 빠졌어요! ":S.game==="mole"?"게임 끝! ":S.game==="forest"?"모닥불이 꺼졌어요! ":"") + (st===3? "대단해요! 친구한테 이 점수를 깨 보라고 해 봐요!" : st===2? "잘했어요! 조금만 더 하면 별 3개!" : "괜찮아요! 다시 하면 더 잘할 수 있어요!");
   document.getElementById("editBtn").style.display = S.shared? "none":"";
   document.getElementById("homeBtn").textContent = S.shared? "나도 만들기":"처음으로";
   setTimeout(()=>{ sndFanfare(st); confettiBurst(st===3?90:st===2?55:30); if(isNew) setTimeout(()=>confettiBurst(60),700); },350);
@@ -4561,6 +4592,190 @@ function endMole(){
   mT(()=>{ const r=res; stopMole(); showResult(r); },1000);
 }
 document.getElementById("mQuit").addEventListener("click",()=>{ if(M&&!M.over){ M.lives=0; renderLives(); endMole(); } });
+
+// ===== 보라몽 숲 =====
+let F=null, fRaf=0;
+const fcv=document.getElementById("fcv"), fctx=fcv.getContext("2d");
+const FW=900, FH=1000, FIRE={x:450,y:540};
+function forestCfg(){ const d=S.diff; return {
+  day:40, night:20,
+  decayDay:[0,1.0,1.3,1.6][d], decayNight:[0,1.4,1.8,2.3][d],
+  mSpeed:[0,38,50,64][d], mGap:[0,5.0,3.8,2.8][d], hit:[0,18,22,26][d], woodFire:12 }; }
+function startForest(){
+  initAudio(); nonBag=[]; snackBag=[]; engBag=[]; COMBO=0; hideCombo();
+  document.body.appendChild(document.getElementById("qModal"));
+  show("forest");
+  const trees=[]; const ring=[[150,200],[450,140],[750,210],[110,520],[790,520],[160,850],[450,900],[750,850],[300,330],[620,340]];
+  ring.forEach(([x,y])=>trees.push({x:x+R(-25,25), y:y+R(-20,20), r:R(52,64), stump:0, shake:0}));
+  F={cfg:forestCfg(), trees, mong:{x:FIRE.x+70,y:FIRE.y+50,tx:null,ty:null,target:null,face:1,carry:0},
+     fire:100, wood:0, woodAll:0, monsters:[], night:false, phaseT:0, dayN:1, nights:0, score:0, ok:0, all:0, scared:0,
+     paused:false, over:false, last:performance.now(), nextM:1.5, pops:[], won:false, t:0};
+  fHUD(); fBanner("☀️ 1일째 낮","나무를 눌러 장작을 모아요!");
+  cancelAnimationFrame(fRaf); fRaf=requestAnimationFrame(fLoop);
+}
+function stopForest(){ cancelAnimationFrame(fRaf); F=null; }
+function fBanner(t, sub){ const b=document.getElementById("fBanner"); b.innerHTML=t+(sub?`<div style="font-family:var(--body);font-size:16px;margin-top:4px">${sub}</div>`:""); b.classList.remove("on"); void b.offsetWidth; b.classList.add("on"); }
+function fPop(txt,x,y,col){ F.pops.push({txt,x,y,col,life:1.2}); }
+function fHUD(){
+  const f=Math.max(0,F.fire);
+  document.getElementById("fFire").style.width=f+"%"; document.getElementById("fFireL").textContent="모닥불 "+Math.ceil(f);
+  setScore(document.getElementById("fScore"),F.score);
+  document.getElementById("fWood").textContent=F.mong.carry;
+  document.getElementById("fNights").textContent=F.nights;
+  const left=Math.max(0,Math.ceil((F.night?F.cfg.night:F.cfg.day)-F.phaseT));
+  document.getElementById("fPhase").textContent = F.night? `🌙 ${F.dayN}일째 밤` : `☀️ ${F.dayN}일째 낮`;
+  document.getElementById("fTime").textContent = left+"초";
+  document.getElementById("fHint").textContent = F.night? "👾 괴물을 톡! 문제를 맞히면 도망가요 · 🔥 모닥불을 지켜요!" : "🌲 나무를 톡! 문제를 맞히면 장작 🪵 · 모닥불 🔥을 톡! 장작 넣기";
+}
+function fAsk(label, okMsg, done){
+  if(S.quiz==="none"){ F.all++; F.ok++; sndRight(); done(true); return; }
+  F.paused=true; F.all++;
+  const q=makeQuestion(); q.label=label; q.okMsg=okMsg;
+  openQuiz(q, ok=>{ if(!F) return; F.paused=false; F.last=performance.now(); if(ok) F.ok++; done(ok); });
+}
+function fTap(e){
+  if(!F||F.over||F.paused) return;
+  const r=fcv.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*FW, y=(e.clientY-r.top)/r.height*FH;
+  // 괴물 먼저
+  const m=F.monsters.find(m=>!m.gone && Math.hypot(m.x-x,m.y-y)<70);
+  if(m){ m.frozen=true;
+    fAsk("👾 괴물을 쫓아내요!","✓ 정답! 괴물이 도망가요!",ok=>{ m.frozen=false; if(ok){ m.flee=true; F.scared++; F.score+=150; fPop("+150 휙!",m.x,m.y-60,"#137538"); } else { m.speedUp=1.5; fPop("괴물이 화났어요!",m.x,m.y-60,"#c2241a"); } });
+    return; }
+  if(Math.hypot(FIRE.x-x,FIRE.y-y)<90){ F.mong.tx=FIRE.x+60; F.mong.ty=FIRE.y+40; F.mong.target={fire:true}; return; }
+  const t=F.trees.find(t=>t.stump<=0 && Math.hypot(t.x-x,t.y-(y+30))<t.r+30);
+  if(t){ F.mong.tx=t.x+(F.mong.x<t.x?-60:60); F.mong.ty=t.y+50; F.mong.target={tree:t}; return; }
+  F.mong.tx=x; F.mong.ty=y; F.mong.target=null;
+}
+fcv.addEventListener("pointerdown",e=>{ e.preventDefault(); fTap(e); });
+function fArrive(){
+  const tg=F.mong.target; F.mong.target=null;
+  if(!tg) return;
+  if(tg.fire){
+    if(F.mong.carry>0){ const n=F.mong.carry; F.fire=Math.min(100,F.fire+n*F.cfg.woodFire); F.score+=n*20; fPop(`🔥 +${n*F.cfg.woodFire}`,FIRE.x,FIRE.y-90,"#e8590c"); F.mong.carry=0; bell(NOTE(0),0,.2,.07); bell(NOTE(7),.08,.3,.07); }
+    else fPop("장작이 없어요! 🌲 나무를 눌러요",FIRE.x,FIRE.y-90,"#5f5c6b");
+    return;
+  }
+  if(tg.tree){ const t=tg.tree; t.shake=.4;
+    fAsk("🌲 나무 문제!","✓ 정답! 장작을 얻었어요!",ok=>{
+      if(ok){ const n=1+(COMBO>=3?1:0); F.mong.carry+=n; F.woodAll+=n; F.score+=50; t.stump=8; fPop(n>1?`🪵+${n} 콤보 보너스!`:"🪵+1",t.x,t.y-t.r-20,"#8a5a2b"); }
+      else { t.shake=.8; fPop("앗, 다시!",t.x,t.y-t.r-20,"#c2241a"); }
+    }); }
+}
+function spawnMonster(){
+  const side=R(0,3); let x,y;
+  if(side===0){x=R(40,860);y=-40;} else if(side===1){x=940;y=R(60,960);} else if(side===2){x=R(40,860);y=1040;} else {x=-40;y=R(60,960);}
+  F.monsters.push({x,y,frozen:false,flee:false,gone:false,speedUp:1,wob:Math.random()*6});
+}
+function fLoop(now){
+  if(!F) return;
+  const dt=Math.min(.05,(now-F.last)/1000); F.last=now;
+  if(!F.paused && !F.over){
+    F.t+=dt; F.phaseT+=dt;
+    const C=F.cfg;
+    F.fire -= (F.night?C.decayNight:C.decayDay)*dt;
+    // 보라몽 이동
+    const M=F.mong;
+    if(M.tx!=null){ const dx=M.tx-M.x, dy=M.ty-M.y, d=Math.hypot(dx,dy), sp=420*dt;
+      if(d<=sp){ M.x=M.tx; M.y=M.ty; M.tx=null; fArrive(); } else { M.x+=dx/d*sp; M.y+=dy/d*sp; if(Math.abs(dx)>4) M.face=dx>0?1:-1; } }
+    F.trees.forEach(t=>{ if(t.stump>0) t.stump-=dt; if(t.shake>0) t.shake-=dt; });
+    // 괴물
+    if(F.night){ F.nextM-=dt; if(F.nextM<=0){ F.nextM=C.mGap*(0.8+Math.random()*0.4); spawnMonster(); } }
+    F.monsters.forEach(m=>{
+      if(m.gone||m.frozen) return;
+      const dx=FIRE.x-m.x, dy=FIRE.y-m.y, d=Math.hypot(dx,dy);
+      if(m.flee){ m.x-=dx/d*300*dt; m.y-=dy/d*300*dt; if(m.x<-80||m.x>980||m.y<-80||m.y>1080) m.gone=true; return; }
+      const sp=C.mSpeed*m.speedUp*dt; m.x+=dx/d*sp; m.y+=dy/d*sp;
+      if(d<70){ m.gone=true; F.fire-=C.hit; fPop(`🔥 −${C.hit}`,FIRE.x,FIRE.y-90,"#c2241a"); sndWrong(); F.shake=.4; }
+    });
+    F.monsters=F.monsters.filter(m=>!m.gone);
+    // 낮·밤 바꾸기
+    if(!F.night && F.phaseT>=C.day){ F.night=true; F.phaseT=0; F.nextM=1; fBanner(`🌙 ${F.dayN}일째 밤`,"괴물이 와요! 괴물을 눌러 쫓아내요"); sfx(300,.5,"sine",.08,150); }
+    else if(F.night && F.phaseT>=C.night){
+      F.night=false; F.phaseT=0; F.nights++; F.dayN++; F.score+=500;
+      F.monsters.forEach(m=>m.flee=true);
+      if(F.nights===3 && !F.won){ F.won=true; fBanner("🎉 3밤 성공!","계속 버텨 볼까요?"); sndFanfare(3); confettiBurst(70); }
+      else { fBanner(`☀️ ${F.dayN}일째 낮`,`+500 버틴 밤 보너스!`); sndGo(); }
+    }
+    if(F.fire<=0){ F.fire=0; endForest(); }
+    F.pops.forEach(p=>{ p.life-=dt; p.y-=40*dt; }); F.pops=F.pops.filter(p=>p.life>0);
+    if(F.shake>0) F.shake-=dt;
+    fHUD();
+  }
+  drawForest(now/1000);
+  fRaf=requestAnimationFrame(fLoop);
+}
+function drawForest(tt){
+  const c=fctx, T=TH(); c.save();
+  if(F.shake>0) c.translate(R(-6,6),R(-6,6));
+  // 땅
+  c.fillStyle=T.ground; c.fillRect(-10,-10,FW+20,FH+20);
+  c.fillStyle=T.stripe; for(let i=0;i<40;i++){ const x=(i*233)%FW, y=(i*157)%FH; c.beginPath(); c.ellipse(x,y,26,10,0,0,Math.PI*2); c.fill(); }
+  // 모닥불 둘레 빈터
+  c.fillStyle="rgba(255,240,210,.55)"; c.beginPath(); c.ellipse(FIRE.x,FIRE.y+20,150,110,0,0,Math.PI*2); c.fill();
+  // 정렬해서 그리기 (위→아래)
+  const items=[];
+  F.trees.forEach(t=>items.push({y:t.y,d:()=>drawTree(c,t,tt)}));
+  items.push({y:FIRE.y,d:()=>drawFire(c,tt)});
+  F.monsters.forEach(m=>items.push({y:m.y,d:()=>drawMonster(c,m,tt)}));
+  const M=F.mong; items.push({y:M.y,d:()=>{ c.save(); c.translate(M.x,M.y); c.scale(M.face,1); drawMong(c,0,0,92,S.char,{t:tt*(M.tx!=null?3:1)}); c.restore();
+    if(M.carry>0){ c.font="bold 30px sans-serif"; c.textAlign="center"; c.fillText("🪵×"+M.carry, M.x, M.y-150); } }});
+  items.sort((a,b)=>a.y-b.y).forEach(i=>i.d());
+  // 밤
+  if(F.night || (F.phaseT>F.cfg.day-4 && !F.night)){
+    const k = F.night? Math.min(1,F.phaseT/1.5) : (F.phaseT-(F.cfg.day-4))/4*0.5;
+    const rad=110+F.fire*2.4;
+    const g=c.createRadialGradient(FIRE.x,FIRE.y,rad*0.35,FIRE.x,FIRE.y,rad);
+    g.addColorStop(0,"rgba(15,18,50,0)"); g.addColorStop(1,`rgba(15,18,50,${0.78*k})`);
+    c.fillStyle=g; c.fillRect(-10,-10,FW+20,FH+20);
+    if(F.night){ c.fillStyle="#fff"; for(let i=0;i<20;i++){ c.globalAlpha=(.3+.5*Math.abs(Math.sin(tt*2+i)))*k; c.beginPath(); c.arc((i*211)%FW,(i*97)%160+10,2.5,0,Math.PI*2); c.fill(); } c.globalAlpha=1;
+      F.monsters.forEach(m=>drawMonster(c,m,tt,true)); }
+  }
+  // 글자 튀기
+  F.pops.forEach(p=>{ c.globalAlpha=Math.min(1,p.life*1.5); c.font="bold 34px sans-serif"; c.textAlign="center"; c.lineWidth=6; c.strokeStyle="#fff"; c.strokeText(p.txt,p.x,p.y); c.fillStyle=p.col; c.fillText(p.txt,p.x,p.y); }); c.globalAlpha=1;
+  c.restore();
+}
+function drawTree(c,t,tt){
+  const sx = t.shake>0 ? Math.sin(tt*60)*6 : 0;
+  c.save(); c.translate(t.x+sx,t.y);
+  c.fillStyle="rgba(0,0,0,.12)"; c.beginPath(); c.ellipse(0,40,t.r*0.8,16,0,0,Math.PI*2); c.fill();
+  c.lineWidth=4; c.strokeStyle=INK; c.fillStyle="#a0703f";
+  if(t.stump>0){ c.beginPath(); c.ellipse(0,26,22,12,0,0,Math.PI*2); c.fill(); c.stroke(); c.fillStyle="#d9b483"; c.beginPath(); c.ellipse(0,22,16,8,0,0,Math.PI*2); c.fill();
+    c.fillStyle="#5fbf6e"; const g=1-t.stump/8; c.beginPath(); c.arc(0,10-20*g,8+10*g,0,Math.PI*2); c.fill(); c.restore(); return; }
+  c.fillRect(-12,0,24,40); c.strokeRect(-12,0,24,40);
+  const col = S.theme===3? "#3fb39a" : S.theme===1? "#e39b5b" : "#5fbf6e";
+  c.fillStyle=col;
+  [[0,-t.r*0.9,t.r*0.75],[-t.r*0.45,-t.r*0.35,t.r*0.65],[t.r*0.45,-t.r*0.35,t.r*0.65]].forEach(([x,y,r])=>{ c.beginPath(); c.arc(x,y,r,0,Math.PI*2); c.fill(); c.stroke(); });
+  c.fillStyle="rgba(255,255,255,.25)"; c.beginPath(); c.arc(-t.r*0.25,-t.r*1.1,t.r*0.25,0,Math.PI*2); c.fill();
+  c.restore();
+}
+function drawFire(c,tt){
+  const k=Math.max(0.15,F.fire/100);
+  c.save(); c.translate(FIRE.x,FIRE.y);
+  c.lineWidth=4; c.strokeStyle=INK;
+  for(let i=0;i<7;i++){ const a=i/7*Math.PI*2; c.fillStyle="#9aa0b5"; c.beginPath(); c.arc(Math.cos(a)*62,20+Math.sin(a)*30,14,0,Math.PI*2); c.fill(); c.stroke(); }
+  c.fillStyle="#8a5a2b"; c.save(); c.rotate(.4); c.fillRect(-50,8,100,16); c.strokeRect(-50,8,100,16); c.restore(); c.save(); c.rotate(-.4); c.fillRect(-50,8,100,16); c.strokeRect(-50,8,100,16); c.restore();
+  const h=(40+70*k)*(1+0.08*Math.sin(tt*12));
+  c.fillStyle="#ff7a2e"; c.beginPath(); c.moveTo(-34*k-10,12); c.quadraticCurveTo(-30,-h*0.5,0,-h); c.quadraticCurveTo(30,-h*0.5,34*k+10,12); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle="#ffd166"; c.beginPath(); c.moveTo(-16*k-6,12); c.quadraticCurveTo(-14,-h*0.3,0,-h*0.6); c.quadraticCurveTo(14,-h*0.3,16*k+6,12); c.closePath(); c.fill();
+  c.restore();
+}
+function drawMonster(c,m,tt,glow){
+  c.save(); c.translate(m.x,m.y+Math.sin(tt*6+m.wob)*4);
+  if(glow){ c.fillStyle="#ffeb3b"; [-14,14].forEach(x=>{ c.beginPath(); c.arc(x,-38,7,0,Math.PI*2); c.fill(); }); c.restore(); return; }
+  c.lineWidth=4; c.strokeStyle=INK; c.fillStyle=m.flee?"#b9a7e6":"#6b4fa8";
+  c.beginPath(); c.moveTo(-36,10); c.quadraticCurveTo(-40,-60,0,-64); c.quadraticCurveTo(40,-60,36,10);
+  for(let i=0;i<4;i++){ c.quadraticCurveTo(27-i*18,-2,18-i*18,10); } c.closePath(); c.fill(); c.stroke();
+  c.fillStyle="#fff"; [-14,14].forEach(x=>{ c.beginPath(); c.arc(x,-38,9,0,Math.PI*2); c.fill(); c.stroke(); });
+  c.fillStyle=INK; [-12,16].forEach(x=>{ c.beginPath(); c.arc(x,-37,4,0,Math.PI*2); c.fill(); });
+  if(m.frozen){ c.font="bold 30px sans-serif"; c.textAlign="center"; c.fillText("❓",0,-78); }
+  c.restore();
+}
+function endForest(){
+  if(F.over) return; F.over=true; sndEnd();
+  const res={sc:F.score, ok:F.ok, all:F.all, rows:[["버틴 밤",F.nights+"밤"],["모은 장작",F.woodAll+"개"]]};
+  setTimeout(()=>{ stopForest(); showResult(res); },1200);
+}
+document.getElementById("fQuit").addEventListener("click",()=>{ if(F&&!F.over){ closeQuiz(); F.paused=false; endForest(); } });
 
 // ===== 조작: 화면 터치 = 점프 =====
 window.addEventListener("keydown",e=>{
