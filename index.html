@@ -246,7 +246,9 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
 .order{background:#fffbea;border:3px solid #2b2b33;border-radius:20px;padding:14px 16px;margin:12px 0;box-shadow:4px 4px 0 #ffd166}
 .orderhead{font-family:var(--display);font-size:20px;margin-bottom:6px}
 .order textarea{width:100%;border:0;background:transparent;font:inherit;font-size:19px;line-height:1.6;resize:none;outline:none;background-image:repeating-linear-gradient(transparent,transparent 29px,#f0d98a 30px);min-height:92px}
-.idealen{text-align:right;font-size:13px;color:var(--muted)}
+.idealen{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.clearbtn{border:2px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;min-height:40px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer}
+.clearbtn:disabled{opacity:.4;cursor:default}
 .chipgroup{margin:10px 0}.cg{font-family:var(--heading);font-size:17px;margin-bottom:6px}
 .chipgroup .chips{justify-content:flex-start}
 .chip.add{background:#fff}.chip.add:active{transform:scale(.95)}
@@ -358,7 +360,7 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
   <div class="order">
     <div class="orderhead">📝 상상 주문서</div>
     <textarea id="ideaIn" rows="3" maxlength="120" placeholder="예) 괴물을 피해 도망가는 밤하늘 게임! 구구단 나오게, 왕관 쓴 핑크몽으로"></textarea>
-    <div class="idealen"><span id="ideaLen">0</span>/120</div>
+    <div class="idealen"><button type="button" class="clearbtn" id="ideaClear">🧽 모두 지우기</button><span><span id="ideaLen">0</span>/120</span></div>
   </div>
   <div class="chipgroup"><div class="cg">🎮 어떤 게임?</div><div class="chips" id="chipGame"></div></div>
   <div class="chipgroup"><div class="cg">🧩 어떤 문제?</div><div class="chips" id="chipQuiz"></div></div>
@@ -3212,7 +3214,12 @@ function ideaChanged(){
   const v=document.getElementById("ideaIn").value;
   document.getElementById("ideaLen").textContent=v.length;
   document.getElementById("buildBtn").disabled = v.trim().length<2;
+  document.getElementById("ideaClear").disabled = v.length===0;
 }
+document.getElementById("ideaClear").addEventListener("click",()=>{
+  const ta=document.getElementById("ideaIn"); ta.value=""; ideaChanged(); sfx(500,.12,"triangle",.06,250);
+  try{ ta.focus(); }catch(e){}
+});
 document.getElementById("ideaIn").addEventListener("input",ideaChanged);
 document.getElementById("toImagine").addEventListener("click",()=>{
   S.shared=false; try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
