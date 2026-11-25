@@ -4722,7 +4722,7 @@ function drawForest(tt){
   const items=[];
   F.trees.forEach(t=>items.push({y:t.y,d:()=>drawTree(c,t,tt)}));
   items.push({y:FIRE.y,d:()=>drawFire(c,tt)});
-  F.monsters.forEach(m=>items.push({y:m.y,d:()=>drawMonster(c,m,tt)}));
+  F.monsters.forEach(m=>items.push({y:m.y,d:()=>drawForestMonster(c,m,tt)}));
   const M=F.mong; items.push({y:M.y,d:()=>{ c.save(); c.translate(M.x,M.y); c.scale(M.face,1); drawMong(c,0,0,92,S.char,{t:tt*(M.tx!=null?3:1)}); c.restore();
     if(M.carry>0){ c.font="bold 30px sans-serif"; c.textAlign="center"; c.fillText("🪵×"+M.carry, M.x, M.y-150); } }});
   items.sort((a,b)=>a.y-b.y).forEach(i=>i.d());
@@ -4734,7 +4734,7 @@ function drawForest(tt){
     g.addColorStop(0,"rgba(15,18,50,0)"); g.addColorStop(1,`rgba(15,18,50,${0.78*k})`);
     c.fillStyle=g; c.fillRect(-10,-10,FW+20,FH+20);
     if(F.night){ c.fillStyle="#fff"; for(let i=0;i<20;i++){ c.globalAlpha=(.3+.5*Math.abs(Math.sin(tt*2+i)))*k; c.beginPath(); c.arc((i*211)%FW,(i*97)%160+10,2.5,0,Math.PI*2); c.fill(); } c.globalAlpha=1;
-      F.monsters.forEach(m=>drawMonster(c,m,tt,true)); }
+      F.monsters.forEach(m=>drawForestMonster(c,m,tt,true)); }
   }
   // 글자 튀기
   F.pops.forEach(p=>{ c.globalAlpha=Math.min(1,p.life*1.5); c.font="bold 34px sans-serif"; c.textAlign="center"; c.lineWidth=6; c.strokeStyle="#fff"; c.strokeText(p.txt,p.x,p.y); c.fillStyle=p.col; c.fillText(p.txt,p.x,p.y); }); c.globalAlpha=1;
@@ -4765,7 +4765,7 @@ function drawFire(c,tt){
   c.fillStyle="#ffd166"; c.beginPath(); c.moveTo(-16*k-6,12); c.quadraticCurveTo(-14,-h*0.3,0,-h*0.6); c.quadraticCurveTo(14,-h*0.3,16*k+6,12); c.closePath(); c.fill();
   c.restore();
 }
-function drawMonster(c,m,tt,glow){
+function drawForestMonster(c,m,tt,glow){
   c.save(); c.translate(m.x,m.y+Math.sin(tt*6+m.wob)*4);
   if(glow){ c.fillStyle="#ffeb3b"; [-14,14].forEach(x=>{ c.beginPath(); c.arc(x,-38,7,0,Math.PI*2); c.fill(); }); c.restore(); return; }
   c.lineWidth=4; c.strokeStyle=INK; c.fillStyle=m.flee?"#b9a7e6":"#6b4fa8";
