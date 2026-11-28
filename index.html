@@ -361,7 +361,7 @@ body.dark-theme #bomb .hud .score, body.dark-theme #mole .hud .score, body.dark-
 
 <!-- 처음 화면 -->
 <section class="screen on" id="home">
-  <button type="button" class="pnBtn" id="pnOpen">📄 부모님을 위한 안내문</button>
+  <button type="button" class="pnBtn" id="pnOpen">📄 부모님·학생 안내문</button>
   <div class="hero">
     <canvas id="heroMong" width="400" height="400" aria-hidden="true"></canvas>
     <h1>나만의 게임 만들기</h1>
@@ -4855,7 +4855,7 @@ boot();
     </div>
 
     <div class="pnCard" style="padding:14px 4px 0">
-      <h3>② 아이와 함께 AI로 직접 만들기</h3>
+      <h3>② 집에서 AI로 직접 만들기 <span style="font-family:var(--heading);font-size:15px;color:var(--muted)">(혼자서도, 가족과 함께도)</span></h3>
       <div class="pnSteps">
         <div><b class="pnRed">1 말로 부탁하기</b> · 만들고 싶은 게임을 글로 써요.</div>
         <div><b class="pnRed">2 실행해 보기</b> · AI가 만든 게임을 바로 해 봐요.</div>
@@ -4866,15 +4866,22 @@ boot();
     </div>
 
     <div class="pnCard" style="background:var(--mint-100)">
-      <h3>③ 부모님이 직접 해 보세요: 우리 아이 맞춤 공부 게임</h3>
-      <p>아이가 좋아하는 게임에 공부를 살짝 섞어 보세요. 빈칸만 채워서 AI에게 보내면 돼요.</p>
+      <h3>③ 나만의 맞춤 공부 게임 만들기</h3>
+      <p>좋아하는 게임에 공부를 살짝 섞어 보세요. 빈칸만 채워서 AI에게 보내면 돼요.</p>
+      <p class="pnHl" style="margin:8px 0 0">👨‍👩‍👧 부모님용</p>
       <div class="pnTpl">“우리 아이는 초등 <span class="pnHl pnRed">( )</span>학년이고 <span class="pnHl pnRed">(좋아하는 게임 종류)</span> 게임을 좋아해요. 그 게임처럼 <span class="pnHl pnRed">(캐릭터·규칙)</span>이 나오는데, 중간중간 <span class="pnHl pnRed">(공부할 내용)</span> 문제를 풀어야 다음으로 갈 수 있는 게임을 만들어 주세요. 한 번에 10분 정도 할 수 있게 해 주세요.”
-        <br><button type="button" class="pnCopy" id="pnCopy" data-copy="우리 아이는 초등 ( )학년이고 (좋아하는 게임 종류) 게임을 좋아해요. 그 게임처럼 (캐릭터·규칙)이 나오는데, 중간중간 (공부할 내용) 문제를 풀어야 다음으로 갈 수 있는 게임을 만들어 주세요. 한 번에 10분 정도 할 수 있게 해 주세요.">📋 문장 복사하기</button>
+        <br><button type="button" class="pnCopy" data-copy="우리 아이는 초등 ( )학년이고 (좋아하는 게임 종류) 게임을 좋아해요. 그 게임처럼 (캐릭터·규칙)이 나오는데, 중간중간 (공부할 내용) 문제를 풀어야 다음으로 갈 수 있는 게임을 만들어 주세요. 한 번에 10분 정도 할 수 있게 해 주세요.">📋 문장 복사하기</button>
+      </div>
+      <p class="pnHl" style="margin:8px 0 0">🎒 중고등학생용</p>
+      <div class="pnTpl">“나는 <span class="pnHl pnRed">( )</span>학교 <span class="pnHl pnRed">( )</span>학년이고 <span class="pnHl pnRed">(좋아하는 게임 종류)</span> 게임을 좋아해. 그 게임처럼 <span class="pnHl pnRed">(캐릭터·규칙)</span>이 나오는데, 중간중간 <span class="pnHl pnRed">(공부할 내용)</span> 문제를 풀어야 다음으로 갈 수 있는 게임을 만들어 줘. 한 번에 10분 정도 할 수 있게 해 줘.”
+        <br><button type="button" class="pnCopy" data-copy="나는 ( )학교 ( )학년이고 (좋아하는 게임 종류) 게임을 좋아해. 그 게임처럼 (캐릭터·규칙)이 나오는데, 중간중간 (공부할 내용) 문제를 풀어야 다음으로 갈 수 있는 게임을 만들어 줘. 한 번에 10분 정도 할 수 있게 해 줘.">📋 문장 복사하기</button>
       </div>
       <p class="pnHl" style="margin-top:8px">이렇게 채워 보세요</p>
       <p>🚗 <span class="pnHl pnBlue">수학 · 3학년</span> 자동차 경주를 좋아해요. 곱셈 문제를 맞히면 부스터가 나오게 해 주세요.</p>
       <p>🐶 <span class="pnHl pnBlue">영어 · 1~2학년</span> 동물 키우기를 좋아해요. 그림을 보고 영어 단어를 고르면 먹이를 줄 수 있게 해 주세요.</p>
       <p>🧱 <span class="pnHl pnBlue">수학 · 4~5학년</span> 블록 쌓기를 좋아해요. 분수 문제를 맞히면 블록을 하나 더 쌓게 해 주세요.</p>
+      <p>🎯 <span class="pnHl pnBlue">수학 · 중2</span> 슈팅 게임을 좋아해. 일차함수 그래프 문제를 맞히면 레벨업하게 해 줘.</p>
+      <p>⚔️ <span class="pnHl pnBlue">영어 · 고1</span> RPG 게임을 좋아해. 영어 단어 뜻을 맞히면 몬스터를 공격하게 해 줘.</p>
       <p class="pnGreen" style="font-family:var(--hand);font-size:18px">더 좋게 만드는 팁 → “틀린 문제는 다시 나오게 해 줘”, “글자를 크게 해 줘”처럼 계속 고쳐 달라고 하면 돼요!</p>
     </div>
 
@@ -4889,8 +4896,9 @@ boot();
     </div>
 
     <div class="pnCard" style="background:var(--pink-100)">
-      <h3>부모님께 드리는 안내</h3>
+      <h3>함께 지켜요</h3>
       <p><span class="pnHl pnGreen">✓</span> 초등학생은 보호자 계정으로 함께 해요.</p>
+      <p><span class="pnHl pnGreen">✓</span> 중고등학생은 위 표에서 서비스별 나이 기준을 먼저 확인해요.</p>
       <p><span class="pnHl pnBlue">!</span> 서비스에 따라 유료 계정이 필요할 수 있어요.</p>
       <p><span class="pnHl pnRed">✕</span> 이름·주소 같은 개인정보는 쓰지 않아요.</p>
       <p><span class="pnHl pnRed">✕</span> AI도 틀릴 수 있어요. 함께 확인해요.</p>
@@ -4908,15 +4916,14 @@ boot();
   document.getElementById("pnClose").addEventListener("click",close);
   w.addEventListener("click",e=>{ if(e.target===w) close(); });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !w.hidden) close(); });
-  const c=document.getElementById("pnCopy");
-  c.addEventListener("click",async()=>{
+  document.querySelectorAll(".pnCopy").forEach(c=>c.addEventListener("click",async()=>{
     const t=c.dataset.copy; let ok=false;
     try{ await navigator.clipboard.writeText(t); ok=true; }catch(e){
       try{ const ta=document.createElement("textarea"); ta.value=t; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); ok=document.execCommand("copy"); ta.remove(); }catch(e2){}
     }
     c.textContent = ok? "✓ 복사했어요! AI 채팅창에 붙여 넣으세요" : "길게 눌러 직접 복사해 주세요";
     setTimeout(()=>c.textContent="📋 문장 복사하기",2500);
-  });
+  }));
 })();
 </script>
 </body>
